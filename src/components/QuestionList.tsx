@@ -102,18 +102,15 @@ const QuestionList: React.FC = () => {
 
         setCorrectAnswersCount(numOfCorrectAnswers)
         
+        if(answersCount){}
+        
         setQuizComplete(true)
-
         setAnswersDisabled(true)
     }
 
     useEffect(() => {
         getQuestionList()
     }, [])
-
-    useEffect(() => {
-        console.log(questionsList)
-    }, [questionsList])
 
     return(
         <div className="text-left">
