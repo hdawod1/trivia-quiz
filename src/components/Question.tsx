@@ -1,36 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Answer from './Answer'
-import { Choice } from './QuestionList';
+import { Choice, QuestionInterface } from './QuestionList';
 
 interface Props {
   question: QuestionInterface,
-  choices: Choice[]
+  choices: Choice[],
+  setQuestionsList: React.Dispatch<React.SetStateAction<QuestionInterface[]>>,
+  quizComplete: boolean,
+  answersDisabled: boolean
 }
 
-export interface QuestionInterface {
-  questionId: string;
-  question: string;
-  choices: any; 
-  correctAnswer: string;
-}
+const Question: React.FC<Props> = ({ question, choices, setQuestionsList, quizComplete, answersDisabled }) => {
 
-const Question: React.FC<Props> = ({ question, choices }) => {
+  const [selectedAnswerId, setSelectedAnswerId] = useState<string>('');
 
-  console.log(choices)
+  const handleAnswerSelection = (aId: string) => {
+    setSelectedAnswerId(aId);
+  };
   
-
   return (
     
-    <>
-      <p>{question.question}</p>
-      <>
+    <div>
+      <p className='text-[#293264] font-bold'>{question.question}</p>
           {
-              choices.map((answer: any) => (
-                  <Answer key={answer.answerId} answer={answer} choices={choices} />
-              ))
+            <div className='md:flex md:my-4 '>
+              { 
+                choices.map((answer: any) => (
+                      <Answer 
+                        key={answer.answerId} 
+                        answer={answer} 
+                        setQuestionsList={setQuestionsList} 
+                        selectedAnswerId={selectedAnswerId}
+                        handleAnswerSelection={handleAnswerSelection}
+                        questionId={question.questionId}
+                        quizComplete={quizComplete}
+                        answersDisabled={answersDisabled}
+                      />
+                )) 
+              }
+            </div>
           }
-      </>
-    </>
+      <hr />
+    </div>
   );
 };
 
