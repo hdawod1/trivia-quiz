@@ -2,6 +2,7 @@ import { useState } from "react"
 import React, {useEffect} from 'react'
 import Question from "./Question.tsx"
 import { nanoid } from "nanoid"
+import {decode} from 'html-entities'
 
 export interface QuestionInterface {
     questionId: string;
@@ -18,9 +19,12 @@ export interface Choice {
     backgroundColor: string
 }
 
-const QuestionList: React.FC = () => {
+interface Props {
+    setQuizReset: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const QuestionList: React.FC<Props> = ({ setQuizReset }) => {
     const [questionsList, setQuestionsList] = useState<QuestionInterface[]>([]);
-    const [answersCount, setAnswersCount] = useState<number>(0)
     const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0)
     const [quizComplete, setQuizComplete] = useState<boolean>(false)
     const [answersDisabled, setAnswersDisabled] = useState<boolean>(false)
@@ -40,7 +44,6 @@ const QuestionList: React.FC = () => {
         setQuizComplete(false)
         setAnswersDisabled(false)
         setCorrectAnswersCount(0)
-        setAnswersCount(0)
 
         const res = await fetch('https://opentdb.com/api.php?amount=5&type=multiple');
         const data = await res.json();
@@ -48,13 +51,13 @@ const QuestionList: React.FC = () => {
         // Map the fetched data to the Question object structure
         const mappedQuestions = data.results.map((question: any) => {
             let options = [
-                decodeString(question.correct_answer), 
-                ...question.incorrect_answers.map((incorrectAnswer: string) => decodeString(incorrectAnswer))
+                decode(question.correct_answer), 
+                ...question.incorrect_answers.map((incorrectAnswer: string) => decode(incorrectAnswer))
             ]
 
             return {
                 questionId: nanoid(),
-                question: decodeString(question.question),
+                question: decode(question.question),
                 choices: shuffle(options.map((option: Choice) => {
                     return {
                         value: option,
@@ -64,7 +67,7 @@ const QuestionList: React.FC = () => {
                         backgroundColor: 'transparent'
                     }
                 })),
-                correctAnswer: decodeString(question.correct_answer),
+                correctAnswer: decode(question.correct_answer),
             }
             
         });
@@ -72,39 +75,21 @@ const QuestionList: React.FC = () => {
         setQuestionsList(mappedQuestions);
     };
 
-    const decodeString = (str: string) => {
-        const textArea = document.createElement('textarea')
-        textArea.innerHTML = str
-        return textArea.value
-    }
-
     const checkAnswers = () => {
-        let selectedAnswersCount = 0;
         let numOfCorrectAnswers = 0
-
-        questionsList.forEach((question: QuestionInterface) => {
-            question.choices.forEach((choice: Choice) => {
-                if (choice.isSelected) {
-                    selectedAnswersCount++;
-                }
-            });
-        });
-
-        setAnswersCount(selectedAnswersCount);
 
         questionsList.forEach((question: QuestionInterface) => {
             question.choices.map((choice: Choice) => {
                 if(choice.isSelected && choice.isCorrect){
-                  numOfCorrectAnswers++
+                numOfCorrectAnswers++
                 }
             })
-          })
+        })
 
         setCorrectAnswersCount(numOfCorrectAnswers)
         
-        if(answersCount){}
-        
         setQuizComplete(true)
+
         setAnswersDisabled(true)
     }
 
@@ -112,29 +97,35 @@ const QuestionList: React.FC = () => {
         getQuestionList()
     }, [])
 
-    return(
-        <div className="text-left">
-            <div>
-                {
-                    questionsList.map((question: QuestionInterface) => (
-                        <div>
-                            <Question 
-                                key={question.questionId} 
-                                question={question} 
-                                setQuestionsList={setQuestionsList} 
-                                choices={question.choices} 
-                                quizComplete={quizComplete}
-                                answersDisabled={answersDisabled}
-                            />
-                        </div>
-                    ))
-                }
-            </div>
-            <div className="flex items-center justify-center mt-6">
-                {quizComplete && <p className="text-[#293264] text-xs font-bold">You got {correctAnswersCount}/5 correct answers</p>}
-                <button className="mx-12 bg-[#4D5B9E] text-[#F5F7FB] text-[10.2px] font-semibold p-3 rounded-lg flex flex-col items-center justify-center" onClick={() => !quizComplete ? checkAnswers() : getQuestionList()}>{quizComplete ? 'Play Again' : 'Check Answers'}</button>
-            </div>
-        </div>
+    useEffect(() => {
+        console.log(questionsList)
+    }, [questionsList])
+
+    return (
+        <>
+            { questionsList ? (
+                <div className="text-left">
+                    <div> { questionsList.map((question: QuestionInterface) => (
+                                <div>
+                                    <Question 
+                                        key={question.questionId} 
+                                        question={question} 
+                                        setQuestionsList={setQuestionsList} 
+                                        choices={question.choices} 
+                                        quizComplete={quizComplete}
+                                        answersDisabled={answersDisabled}
+                                    />
+                                </div>
+                            )) }
+                    </div>
+                    <div className="flex items-center justify-center mt-6">
+                        {quizComplete && <p className="text-[#293264] text-xs font-bold">You got {correctAnswersCount}/5 correct answers</p>}
+                        <button className="mx-12 bg-[#4D5B9E] text-[#F5F7FB] text-[10.2px] font-semibold p-3 rounded-lg flex flex-col items-center justify-center" onClick={() => !quizComplete ? checkAnswers() : setQuizReset(true)}>{quizComplete ? 'Play Again' : 'Check Answers'}</button>
+                    </div>
+                </div>
+                ) : ( <p>Loading New Questions...</p> )
+            }
+        </>
     )
 }
 

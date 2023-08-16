@@ -20,10 +20,10 @@ const Question: React.FC<Props> = ({ question, choices, setQuestionsList, quizCo
   
   return (
     
-    <div>
+    <div className='py-4'>
       <p className='text-[#293264] font-bold'>{question.question}</p>
           {
-            <div className='md:flex md:my-4 '>
+            <div className='md:flex md:my-4'>
               { 
                 choices.map((answer: any) => (
                       <Answer 
@@ -40,7 +40,7 @@ const Question: React.FC<Props> = ({ question, choices, setQuestionsList, quizCo
               }
             </div>
           }
-      <hr />
+      <div className='border-t border-gray-300 mt-10'></div>
     </div>
   );
 };

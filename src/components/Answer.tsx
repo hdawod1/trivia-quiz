@@ -80,7 +80,7 @@ const AnswerView: React.FC<Props> = ({ answer, setQuestionsList, questionId, sel
   };
 
   return (
-    <div onClick={() => !answersDisabled && handleAnswerHeld(answer.answerId)} style={answerStyle} className='mx-3 py-1 px-9 border border-solid border-[#4D5B9E] border-opacity-50 rounded-2xl text-[10.2px]'>
+    <div onClick={() => !answersDisabled && handleAnswerHeld(answer.answerId)} style={answerStyle} className='mx-3 py-1 px-9 border-2 border-solid border-[#4D5B9E] border-opacity-50 rounded-2xl text-[10.2px] md:my-0 my-3'>
       <p style={{opacity: textOpacity}}>
         {answer.value}
       </p>
