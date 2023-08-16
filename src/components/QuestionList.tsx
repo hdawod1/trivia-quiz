@@ -97,10 +97,6 @@ const QuestionList: React.FC<Props> = ({ setQuizReset }) => {
         getQuestionList()
     }, [])
 
-    useEffect(() => {
-        console.log(questionsList)
-    }, [questionsList])
-
     return (
         <>
             { questionsList ? (
