@@ -7,10 +7,12 @@ interface Props {
   choices: Choice[],
   setQuestionsList: React.Dispatch<React.SetStateAction<QuestionInterface[]>>,
   quizComplete: boolean,
-  answersDisabled: boolean
+  answersDisabled: boolean,
+  answersSelectedCount: number,
+  setAnswersSelectedCount: React.Dispatch<React.SetStateAction<number>>
 }
 
-const Question: React.FC<Props> = ({ question, choices, setQuestionsList, quizComplete, answersDisabled }) => {
+const Question: React.FC<Props> = ({ question, choices, setQuestionsList, quizComplete, answersDisabled, answersSelectedCount, setAnswersSelectedCount }) => {
 
   const [selectedAnswerId, setSelectedAnswerId] = useState<string>('');
 
@@ -35,6 +37,8 @@ const Question: React.FC<Props> = ({ question, choices, setQuestionsList, quizCo
                         questionId={question.questionId}
                         quizComplete={quizComplete}
                         answersDisabled={answersDisabled}
+                        answersSelectedCount={answersSelectedCount}
+                        setAnswersSelectedCount={setAnswersSelectedCount}
                       />
                 )) 
               }

@@ -8,10 +8,12 @@ interface Props {
   handleAnswerSelection: any,
   questionId: string,
   quizComplete: boolean,
-  answersDisabled: boolean
+  answersDisabled: boolean,
+  answersSelectedCount: number,
+  setAnswersSelectedCount: React.Dispatch<React.SetStateAction<number>>
 }
 
-const AnswerView: React.FC<Props> = ({ answer, setQuestionsList, questionId, selectedAnswerId, handleAnswerSelection, quizComplete, answersDisabled }) => {
+const AnswerView: React.FC<Props> = ({ answer, setQuestionsList, questionId, selectedAnswerId, handleAnswerSelection, quizComplete, answersDisabled, setAnswersSelectedCount }) => {
   const [bgColor, setBgColor] = useState<string>('transparent');
   const [textOpacity, setTextOpacity] = useState<string>('1')
 
@@ -25,6 +27,7 @@ const AnswerView: React.FC<Props> = ({ answer, setQuestionsList, questionId, sel
             ...question,
             choices: question.choices.map((choice: Choice) => {
               if (choice.answerId === aId) {
+                setAnswersSelectedCount(prevCount => prevCount + 1)
                 return {
                   ...choice,
                   isSelected: true,

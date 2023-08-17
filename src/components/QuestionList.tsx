@@ -7,8 +7,7 @@ import {decode} from 'html-entities'
 export interface QuestionInterface {
     questionId: string;
     question: string;
-    choices: Choice[]; 
-    correctAnswer: string
+    choices: Choice[];
 }
 
 export interface Choice {
@@ -19,13 +18,10 @@ export interface Choice {
     backgroundColor: string
 }
 
-interface Props {
-    setQuizReset: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-const QuestionList: React.FC<Props> = ({ setQuizReset }) => {
+const QuestionList: React.FC = () => {
     const [questionsList, setQuestionsList] = useState<QuestionInterface[]>([]);
     const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0)
+    const [answersSelectedCount, setAnswersSelectedCount] = useState<number>(0)
     const [quizComplete, setQuizComplete] = useState<boolean>(false)
     const [answersDisabled, setAnswersDisabled] = useState<boolean>(false)
 
@@ -44,6 +40,7 @@ const QuestionList: React.FC<Props> = ({ setQuizReset }) => {
         setQuizComplete(false)
         setAnswersDisabled(false)
         setCorrectAnswersCount(0)
+        setAnswersSelectedCount(0)
 
         const res = await fetch('https://opentdb.com/api.php?amount=5&type=multiple');
         const data = await res.json();
@@ -81,7 +78,7 @@ const QuestionList: React.FC<Props> = ({ setQuizReset }) => {
         questionsList.forEach((question: QuestionInterface) => {
             question.choices.map((choice: Choice) => {
                 if(choice.isSelected && choice.isCorrect){
-                numOfCorrectAnswers++
+                    numOfCorrectAnswers++
                 }
             })
         })
@@ -97,6 +94,14 @@ const QuestionList: React.FC<Props> = ({ setQuizReset }) => {
         getQuestionList()
     }, [])
 
+    const quizUnfinishedStyle = () => {
+        if(answersSelectedCount < 5){
+            return {
+                color: 'lightgray'
+            }
+        }
+    }
+
     return (
         <>
             { questionsList ? (
@@ -110,13 +115,15 @@ const QuestionList: React.FC<Props> = ({ setQuizReset }) => {
                                         choices={question.choices} 
                                         quizComplete={quizComplete}
                                         answersDisabled={answersDisabled}
+                                        answersSelectedCount={answersSelectedCount}
+                                        setAnswersSelectedCount={setAnswersSelectedCount}
                                     />
                                 </div>
                             )) }
                     </div>
                     <div className="flex items-center justify-center mt-6">
                         {quizComplete && <p className="text-[#293264] text-xs font-bold">You got {correctAnswersCount}/5 correct answers</p>}
-                        <button className="mx-12 bg-[#4D5B9E] text-[#F5F7FB] text-[10.2px] font-semibold p-3 rounded-lg flex flex-col items-center justify-center" onClick={() => !quizComplete ? checkAnswers() : setQuizReset(true)}>{quizComplete ? 'Play Again' : 'Check Answers'}</button>
+                        <button style={quizUnfinishedStyle()} disabled={answersSelectedCount < 5} className="mx-12 bg-[#4D5B9E] text-[#F5F7FB] text-[10.2px] font-semibold p-3 rounded-lg flex flex-col items-center justify-center" onClick={() => !quizComplete ? checkAnswers() : getQuestionList()}>{quizComplete ? 'Play Again' : 'Check Answers'}</button>
                     </div>
                 </div>
                 ) : ( <p>Loading New Questions...</p> )

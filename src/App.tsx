@@ -5,13 +5,13 @@ import StartQuiz from './pages/StartQuiz';
 
 const App: React.FC = () => {
 
-  const [quizReset, setQuizReset] = useState<boolean>(true)
+  const [quizInitial, setQuizInitial] = useState<boolean>(true)
 
   return (
     <>
-      { quizReset && <StartQuiz setQuizReset={setQuizReset} /> }
+      { quizInitial && <StartQuiz setQuizReset={setQuizInitial} /> }
       <div className='flex flex-col items-center justify-center md:relative md:top-[120px]'>
-        { !quizReset && <QuestionList setQuizReset={setQuizReset} /> }
+        { !quizInitial && <QuestionList /> }
       </div>
     </>
   );
