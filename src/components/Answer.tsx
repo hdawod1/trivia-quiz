@@ -37,12 +37,7 @@ const AnswerView: React.FC<Props> = ({ answer, setQuestionsList, questionId, sel
                   ...choice,
                   isSelected: false
                 };
-              } else if (choice.isCorrect) {
-                return {
-                  ...choice,
-                  backgroundColor: '#94D7A2',
-                };
-              }
+              } 
               return choice;
             }),
           };
