@@ -60,7 +60,7 @@ const QuestionList: React.FC = () => {
                         value: option,
                         answerId: nanoid(),
                         isSelected: false,
-                        isCorrect: option === question.correct_answer,
+                        isCorrect: option == question.correct_answer,
                         backgroundColor: 'transparent'
                     }
                 })),
